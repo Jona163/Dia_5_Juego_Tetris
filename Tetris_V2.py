@@ -93,7 +93,8 @@ class Tetris():
             xs = [c for (r, c) in self.tetromino]
             size = max(max(ys) - min(ys), max(xs) - min(xs))
             rotated_tetromino = [(c, size - r) for (r, c) in self.tetromino]
-
+            
+            # Ajusta el tetromino para que no se salga del campo
             wallkick_offset = self.tetromino_offset[:]
             tetromino_coord = [(r + wallkick_offset[0], c + wallkick_offset[1]) for (r, c) in rotated_tetromino]
             min_x = min(c for r, c in tetromino_coord)
@@ -107,7 +108,7 @@ class Tetris():
             if all(self.is_cell_free(r, c) for (r, c) in tetromino_coord):
                 self.tetromino, self.tetromino_offset = rotated_tetromino, wallkick_offset
 
-
+# Clase que representa la interfaz gráfica del juego
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -125,6 +126,7 @@ class Application(tk.Frame):
         PIECE_SIZE = 30
         self.canvas = tk.Canvas(self, height=PIECE_SIZE*self.tetris.FIELD_HEIGHT, 
                                       width = PIECE_SIZE*self.tetris.FIELD_WIDTH, bg="black", bd=0)
+         # Asigna las teclas para mover y rotar el tetromino
         self.canvas.bind('<Left>', lambda _: (self.tetris.move(0, -1), self.update()))
         self.canvas.bind('<Right>', lambda _: (self.tetris.move(0, 1), self.update()))
         self.canvas.bind('<Down>', lambda _: (self.tetris.move(1, 0), self.update()))
