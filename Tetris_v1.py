@@ -73,5 +73,40 @@ class Tetris():
         with self.move_lock:
             if self.game_over:
                 return
+            
+            # Verifica si la nueva posición está libre
+            if all(self.is_cell_free(r + dr, c + dc) for (r, c) in self.get_tetromino_coords()):
+                self.tetromino_offset = [self.tetromino_offset[0] + dr, self.tetromino_offset[1] + dc]
+            elif dr == 1 and dc == 0:
+                self.game_over = any(r < 0 for (r, c) in self.get_tetromino_coords())  # Game over si toca la parte superior
+                if not self.game_over:
+                    self.apply_tetromino()  # Aplica la pieza al campo
+
+    def rotate(self):
+        """Rota el tetromino 90 grados en el sentido de las agujas del reloj"""
+        with self.move_lock:
+            if self.game_over:
+                self.__init__()
+                return
+
+            ys = [r for (r, c) in self.tetromino]
+            xs = [c for (r, c) in self.tetromino]
+            size = max(max(ys) - min(ys), max(xs) - min(xs))
+            rotated_tetromino = [(c, size - r) for (r, c) in self.tetromino]
+
+            # Ajusta el tetromino para que no se salga del campo
+            wallkick_offset = self.tetromino_offset[:]
+            tetromino_coord = [(r + wallkick_offset[0], c + wallkick_offset[1]) for (r, c) in rotated_tetromino]
+            min_x = min(c for r, c in tetromino_coord)
+            max_x = max(c for r, c in tetromino_coord)
+            max_y = max(r for r, c in tetromino_coord)
+            wallkick_offset[1] -= min(0, min_x)
+            wallkick_offset[1] += min(0, Tetris.FIELD_WIDTH - (1 + max_x))
+            wallkick_offset[0] += min(0, Tetris.FIELD_HEIGHT - (1 + max_y))
+
+            tetromino_coord = [(r + wallkick_offset[0], c + wallkick_offset[1]) for (r, c) in rotated_tetromino]
+            if all(self.is_cell_free(r, c) for (r, c) in tetromino_coord):
+                self.tetromino, self.tetromino_offset = rotated_tetromino, wallkick_offset
+
 
     
