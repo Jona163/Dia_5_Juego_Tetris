@@ -23,3 +23,46 @@ class Tetris():
         [(0, 0), (1, 0), (1, 1), (2, 1)], # S
         [(0, 1), (1, 1), (2, 1), (3, 1)], # I
     ]
+    
+    def __init__(self):
+        """Inicializa los atributos del juego, como el campo de juego, puntaje y nivel"""
+        # Crear el campo de juego vacío (lista de listas)
+        self.field = [[0 for c in range(Tetris.FIELD_WIDTH)] for r in range(Tetris.FIELD_HEIGHT)]
+        self.score = 0 # Puntaje inicial
+        self.level = 0 # Nivel inicial
+        self.total_lines_eliminated = 0
+        self.game_over = False
+        self.move_lock = Lock()
+        self.reset_tetromino()
+
+    def reset_tetromino(self):
+        self.tetromino = random.choice(Tetris.TETROMINOS)[:]
+        self.tetromino_color = random.randint(1, len(COLORS)-1)
+        self.tetromino_offset = [-2, Tetris.FIELD_WIDTH // 2]
+        self.game_over = any(not self.is_cell_free(r, c) for (r, c) in self.get_tetromino_coords())
+
+    def get_tetromino_coords(self):
+        return [(r + self.tetromino_offset[0], c + self.tetromino_offset[1]) for (r, c) in self.tetromino]
+
+    def apply_tetromino(self):
+        for (r, c) in self.get_tetromino_coords():
+            self.field[r][c] = self.tetromino_color
+
+        new_field = [row for row in self.field if any(tile == 0 for tile in row)]
+        lines_eliminated = len(self.field) - len(new_field)
+        self.total_lines_eliminated += lines_eliminated
+        self.field = [[0] * Tetris.FIELD_WIDTH for x in range(lines_eliminated)] + new_field
+        self.score += Tetris.SCORE_PER_ELIMINATED_LINES[lines_eliminated] * (self.level + 1)
+        self.level = self.total_lines_eliminated // 10
+        self.reset_tetromino()
+
+    def get_color(self, r, c):
+        return self.tetromino_color if (r, c) in self.get_tetromino_coords() else self.field[r][c]
+
+    def is_cell_free(self, r, c):
+        return r < Tetris.FIELD_HEIGHT and 0 <= c < Tetris.FIELD_WIDTH and (r < 0 or self.field[r][c] == 0)
+
+    def move(self, dr, dc):
+        with self.move_lock:
+            if self.game_over:
+                return
