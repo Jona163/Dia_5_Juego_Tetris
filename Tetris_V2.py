@@ -43,11 +43,13 @@ class Tetris():
         self.game_over = any(not self.is_cell_free(r, c) for (r, c) in self.get_tetromino_coords())
 
     def get_tetromino_coords(self):
+        """Obtiene las coordenadas actuales del tetromino en el campo"""
         return [(r + self.tetromino_offset[0], c + self.tetromino_offset[1]) for (r, c) in self.tetromino]
 
     def apply_tetromino(self):
+        """Aplica el tetromino actual al campo de juego y verifica si se eliminan líneas"""
         for (r, c) in self.get_tetromino_coords():
-            self.field[r][c] = self.tetromino_color
+            self.field[r][c] = self.tetromino_color    # Marca las posiciones ocupadas por el tetromino
 
         new_field = [row for row in self.field if any(tile == 0 for tile in row)]
         lines_eliminated = len(self.field) - len(new_field)
