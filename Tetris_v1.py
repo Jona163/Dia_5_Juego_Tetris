@@ -73,7 +73,7 @@ class Tetris():
         with self.move_lock:
             if self.game_over:
                 return
-            
+
             # Verifica si la nueva posición está libre
             if all(self.is_cell_free(r + dr, c + dc) for (r, c) in self.get_tetromino_coords()):
                 self.tetromino_offset = [self.tetromino_offset[0] + dr, self.tetromino_offset[1] + dc]
@@ -107,7 +107,6 @@ class Tetris():
             tetromino_coord = [(r + wallkick_offset[0], c + wallkick_offset[1]) for (r, c) in rotated_tetromino]
             if all(self.is_cell_free(r, c) for (r, c) in tetromino_coord):
                 self.tetromino, self.tetromino_offset = rotated_tetromino, wallkick_offset
-
 
 # Clase que representa la interfaz gráfica del juego
 class Application(tk.Frame):
@@ -164,7 +163,3 @@ class Application(tk.Frame):
 root = tk.Tk()
 app = Application(master=root)
 app.mainloop()
-
-
-
-    
