@@ -1,3 +1,8 @@
+# Autor: Jonathan Hernández
+# Fecha: 06 Septiembre 2024
+# Descripción: Código para simulacion de juego Tetris.
+# GitHub: https://github.com/Jona163
+
 import tkinter as tk  # Importa la biblioteca tkinter para la interfaz gráfica
 import random         # Importa la biblioteca random para generar números aleatorios
 from threading import Lock  # Importa Lock para asegurar que ciertos procesos no ocurran simultáneamente
