@@ -36,9 +36,10 @@ class Tetris():
         self.reset_tetromino()    # Inicia el primer tetromino
 
     def reset_tetromino(self):
-        self.tetromino = random.choice(Tetris.TETROMINOS)[:]
-        self.tetromino_color = random.randint(1, len(COLORS)-1)
-        self.tetromino_offset = [-2, Tetris.FIELD_WIDTH // 2]
+        """Selecciona un nuevo tetromino de forma aleatoria y lo coloca en la posición inicial"""
+        self.tetromino = random.choice(Tetris.TETROMINOS)[:]    # Escoge una pieza aleatoria
+        self.tetromino_color = random.randint(1, len(COLORS)-1)     # Asigna un color aleatorio
+        self.tetromino_offset = [-2, Tetris.FIELD_WIDTH // 2]    # Establece la posición inicial de la pieza
         self.game_over = any(not self.is_cell_free(r, c) for (r, c) in self.get_tetromino_coords())
 
     def get_tetromino_coords(self):
