@@ -109,4 +109,62 @@ class Tetris():
                 self.tetromino, self.tetromino_offset = rotated_tetromino, wallkick_offset
 
 
+# Clase que representa la interfaz gráfica del juego
+class Application(tk.Frame):
+    def __init__(self, master=None):
+        """Inicializa la aplicación y sus widgets"""
+        super().__init__(master)
+        self.tetris = Tetris()
+        self.pack()
+        self.create_widgets()
+        self.update_clock()
+
+    def update_clock(self):
+        """Actualiza el juego cada cierto intervalo de tiempo"""
+        self.tetris.move(1, 0)  # Mueve la pieza hacia abajo
+        self.update()  
+        self.master.after(int(1000*(0.66**self.tetris.level)), self.update_clock)  # Ajusta la velocidad según el nivel
+    
+    def create_widgets(self):
+        """Crea los elementos gráficos del juego"""
+        PIECE_SIZE = 30  # Tamaño de cada celda
+        self.canvas = tk.Canvas(self, height=PIECE_SIZE*self.tetris.FIELD_HEIGHT, 
+                                      width=PIECE_SIZE*self.tetris.FIELD_WIDTH, bg="black", bd=0)
+        # Asigna las teclas para mover y rotar el tetromino
+        self.canvas.bind('<Left>', lambda _: (self.tetris.move(0, -1), self.update()))
+        self.canvas.bind('<Right>', lambda _: (self.tetris.move(0, 1), self.update()))
+        self.canvas.bind('<Down>', lambda _: (self.tetris.move(1, 0), self.update()))
+        self.canvas.bind('<Up>', lambda _: (self.tetris.rotate(), self.update()))
+        self.canvas.focus_set()
+
+        # Crea las celdas del campo de juego
+        self.rectangles = [
+            self.canvas.create_rectangle(c*PIECE_SIZE, r*PIECE_SIZE, (c+1)*PIECE_SIZE, (r+1)*PIECE_SIZE)
+            for r in range(self.tetris.FIELD_HEIGHT) for c in range(self.tetris.FIELD_WIDTH)
+        ]
+        self.canvas.pack(side="left")
+
+        # Muestra el puntaje y estado del juego
+        self.status_msg = tk.Label(self, anchor='w', width=11, font=("Courier", 24))
+        self.status_msg.pack(side="top")
+        self.game_over_msg = tk.Label(self, anchor='w', width=11, font=("Courier", 24), fg='red')
+        self.game_over_msg.pack(side="top")
+    
+    def update(self):
+        """Actualiza la pantalla del juego"""
+        for i, _id in enumerate(self.rectangles):
+            color_num = self.tetris.get_color(i//self.tetris.FIELD_WIDTH, i % self.tetris.FIELD_WIDTH)
+            self.canvas.itemconfig(_id, fill=COLORS[color_num])  # Cambia el color de las celdas según las piezas
+
+        # Actualiza el texto con el puntaje y nivel
+        self.status_msg['text'] = "Score: {}\nLevel: {}".format(self.tetris.score, self.tetris.level)
+        self.game_over_msg['text'] = "GAME OVER.\nPress UP\nto reset" if self.tetris.game_over else ""
+
+# Inicializa la ventana principal y ejecuta la aplicación
+root = tk.Tk()
+app = Application(master=root)
+app.mainloop()
+
+
+
     
