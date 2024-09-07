@@ -50,19 +50,22 @@ class Tetris():
         """Aplica el tetromino actual al campo de juego y verifica si se eliminan líneas"""
         for (r, c) in self.get_tetromino_coords():
             self.field[r][c] = self.tetromino_color    # Marca las posiciones ocupadas por el tetromino
-
+            
+        # Elimina las líneas completas y actualiza el campo de juego
         new_field = [row for row in self.field if any(tile == 0 for tile in row)]
         lines_eliminated = len(self.field) - len(new_field)
         self.total_lines_eliminated += lines_eliminated
         self.field = [[0] * Tetris.FIELD_WIDTH for x in range(lines_eliminated)] + new_field
-        self.score += Tetris.SCORE_PER_ELIMINATED_LINES[lines_eliminated] * (self.level + 1)
-        self.level = self.total_lines_eliminated // 10
+        self.score += Tetris.SCORE_PER_ELIMINATED_LINES[lines_eliminated] * (self.level + 1)    # Actualiza el puntaje
+        self.level = self.total_lines_eliminated // 10     # Aumenta el nivel después de eliminar 10 líneas
         self.reset_tetromino()
 
     def get_color(self, r, c):
+        """Devuelve el color de una celda determinada"""
         return self.tetromino_color if (r, c) in self.get_tetromino_coords() else self.field[r][c]
 
     def is_cell_free(self, r, c):
+         """Verifica si una celda está libre para colocar una pieza"""
         return r < Tetris.FIELD_HEIGHT and 0 <= c < Tetris.FIELD_WIDTH and (r < 0 or self.field[r][c] == 0)
 
     def move(self, dr, dc):
