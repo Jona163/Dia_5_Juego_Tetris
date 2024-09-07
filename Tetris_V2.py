@@ -69,16 +69,18 @@ class Tetris():
         return r < Tetris.FIELD_HEIGHT and 0 <= c < Tetris.FIELD_WIDTH and (r < 0 or self.field[r][c] == 0)
 
     def move(self, dr, dc):
+        """Mueve el tetromino en la dirección indicada (dr: filas, dc: columnas)"""
         with self.move_lock:
             if self.game_over:
                 return
-
+                
+            # Verifica si la nueva posición está libre
             if all(self.is_cell_free(r + dr, c + dc) for (r, c) in self.get_tetromino_coords()):
                 self.tetromino_offset = [self.tetromino_offset[0] + dr, self.tetromino_offset[1] + dc]
             elif dr == 1 and dc == 0:
-                self.game_over = any(r < 0 for (r, c) in self.get_tetromino_coords())
+                self.game_over = any(r < 0 for (r, c) in self.get_tetromino_coords())    # Game over si toca la parte superior
                 if not self.game_over:
-                    self.apply_tetromino()
+                    self.apply_tetromino()     # Aplica la pieza al campo
 
     def rotate(self):
         with self.move_lock:
