@@ -23,7 +23,7 @@ class Tetris():
         [(0, 0), (1, 0), (1, 1), (2, 1)], # S
         [(0, 1), (1, 1), (2, 1), (3, 1)], # I
     ]
-    
+
     def __init__(self):
         """Inicializa los atributos del juego, como el campo de juego, puntaje y nivel"""
         # Crear el campo de juego vacío (lista de listas)
@@ -66,7 +66,7 @@ class Tetris():
         with self.move_lock:
             if self.game_over:
                 return
-                
+
             if all(self.is_cell_free(r + dr, c + dc) for (r, c) in self.get_tetromino_coords()):
                 self.tetromino_offset = [self.tetromino_offset[0] + dr, self.tetromino_offset[1] + dc]
             elif dr == 1 and dc == 0:
@@ -151,6 +151,3 @@ root = tk.Tk()
 root.configure(bg="black")
 app = Application(master=root)
 app.mainloop()
-
-
-
