@@ -83,6 +83,7 @@ class Tetris():
                     self.apply_tetromino()     # Aplica la pieza al campo
 
     def rotate(self):
+        """Rota el tetromino 90 grados en el sentido de las agujas del reloj"""
         with self.move_lock:
             if self.game_over:
                 self.__init__()
